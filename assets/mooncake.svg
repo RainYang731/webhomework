@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <radialGradient id="cake" cx="0" cy="0" r="1" gradientTransform="matrix(36 38 -38 36 35 27)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE9A9"/>
+      <stop offset=".72" stop-color="#E8AD56"/>
+      <stop offset="1" stop-color="#C77E38"/>
+    </radialGradient>
+    <linearGradient id="side" x1="50" x2="50" y1="60" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D99548"/>
+      <stop offset="1" stop-color="#A85D30"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="50" cy="88" rx="34" ry="6" fill="#573B2C" fill-opacity=".14"/>
+  <path d="M15 48c0-20 15-34 35-34s35 14 35 34v19c0 10-15 17-35 17S15 77 15 67V48Z" fill="url(#side)" stroke="#A85E2C" stroke-width="2"/>
+  <ellipse cx="50" cy="48" rx="35" ry="34" fill="url(#cake)" stroke="#A85E2C" stroke-width="2.5"/>
+  <ellipse cx="50" cy="48" rx="28" ry="27" stroke="#FFF0C5" stroke-opacity=".8" stroke-width="2"/>
+  <ellipse cx="50" cy="48" rx="22" ry="21" stroke="#B87336" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="m50 30 4.6 9.3 10.3 1.5-7.5 7.3 1.8 10.3-9.2-4.9-9.2 4.9 1.8-10.3-7.5-7.3 10.3-1.5L50 30Z" fill="#FFF0C5" fill-opacity=".9" stroke="#B87336" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="50" cy="45" r="5" fill="#D89545"/>
+  <path d="M24 48h5m42 0h5M50 22v5m0 42v5M31 29l4 4m30 30 4 4m0-38-4 4m-30 30-4 4" stroke="#FFF0C5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M25 65c7 4 15 6 25 6s18-2 25-6" stroke="#F8D38D" stroke-opacity=".55" stroke-width="2"/>
+</svg>

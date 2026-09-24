@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#171329" />
-    <meta name="description" content="點掉殭屍、讓月兔圖片快速落下補位，挑戰 60 秒最高分！" />
-    <title>月兔防衛隊｜中秋夜遊戲</title>
+    <meta name="description" content="吃月餅限時挑戰：看準最底下的月餅，60 秒內拿下最高分！" />
+    <title>吃月餅｜中秋夜遊戲</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -14,13 +14,13 @@
   <body>
     <main class="game-app">
       <header class="hud">
-        <div class="brand"><span class="brand-mark">月</span><span class="brand-name">月兔防衛隊<small>MOON GUARD</small></span></div>
+        <div class="brand"><span class="brand-mark">月</span><span class="brand-name">吃月餅<small>MOONCAKE CHALLENGE</small></span></div>
         <div class="hud-stat timer-stat"><span>剩餘時間</span><strong id="timer">60</strong></div>
         <div class="hud-stat score-stat"><span>本局分數</span><strong id="score">0</strong></div>
         <button class="rank-button" id="ranking-button" type="button" aria-label="開啟排行榜">榜單</button>
       </header>
 
-      <div class="board-caption"><span><i></i> 月宮防線</span><span id="game-hint">點最底排殭屍所在直欄的任意一格即可消除</span></div>
+      <div class="board-caption"><span><i></i> 月餅陣列</span><span id="game-hint">點最底排月餅所在直欄的任意一格即可吃掉</span></div>
       <section class="board" id="board" aria-label="4 欄 7 列遊戲區"></section>
 
       <footer class="game-footer">
@@ -48,6 +48,11 @@
         <p class="dialog-copy" id="result-caption">月宮暫時安全了</p>
         <div class="final-score"><strong id="final-score">0</strong><span>分</span></div>
         <p class="result-rank" id="result-rank"></p>
+        <section class="result-leaderboard" aria-labelledby="result-ranking-title">
+          <div class="result-ranking-heading"><strong id="result-ranking-title">本機排行榜</strong><span>TOP 10</span></div>
+          <div class="leader-list" id="result-leader-list"></div>
+          <div class="empty-board" id="result-empty-board" hidden><span>✧</span><strong>還沒有紀錄</strong><small>來挑戰第一名吧！</small></div>
+        </section>
         <button class="start-button replay-button" id="again-button" type="button">再玩一次 <b>↗</b></button>
       </section>
     </div>
