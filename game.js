@@ -191,7 +191,7 @@
     startButton.disabled = true;
     startButton.innerHTML = '遊戲進行中 <b>●</b>';
     rankButton.disabled = true;
-    hint.textContent = '上下位置不影響判定，只檢查該欄最底格';
+    hint.textContent = '點最底排殭屍所在直欄的任意一格即可消除';
     footerMessage.textContent = '每點中一隻殭屍得 1 分';
     frameId = requestAnimationFrame(updateTimer);
   }
@@ -206,7 +206,7 @@
       penaltyActive = false;
       if (running) {
         footerMessage.textContent = '每點中一隻殭屍得 1 分';
-        hint.textContent = '上下位置不影響判定，只檢查該欄最底格';
+        hint.textContent = '點最底排殭屍所在直欄的任意一格即可消除';
       }
       setBoardDisabled();
       const bottomZombie = board.querySelector(`.board-cell[data-row="${ROWS - 1}"] .zombie-image`);
@@ -216,13 +216,15 @@
 
   function hitColumn(column) {
     if (!running || settling || penaltyActive) return;
-    // Ignore the tap's vertical coordinate; judge only the bottom cell in this column.
-    const row = ROWS - 1;
-    if (rowColumns[row] !== column) {
+    // Find the lowest zombie on the board, then compare only its column with the tap.
+    let row = ROWS - 1;
+    while (row >= 0 && !Number.isInteger(rowColumns[row])) row -= 1;
+    const bottomZombieColumn = rowColumns[row];
+    if (row < 0 || column !== bottomZombieColumn) {
       wrongTap();
       return;
     }
-    const cell = board.querySelector(`.board-cell[data-row="${row}"][data-column="${column}"]`);
+    const cell = board.querySelector(`.board-cell[data-row="${row}"][data-column="${bottomZombieColumn}"]`);
     if (!cell) return;
 
     score += 1;
@@ -254,11 +256,8 @@
   board.addEventListener('click', (event) => {
     const cell = event.target.closest('.board-cell');
     if (!cell || cell.disabled) return;
-    const bounds = board.getBoundingClientRect();
-    const column = Math.min(COLUMNS - 1, Math.max(0,
-      Math.floor(((event.clientX - bounds.left) / bounds.width) * COLUMNS)));
-    // The vertical position is intentionally ignored: the whole column is one hit lane.
-    hitColumn(column);
+    // Use the clicked left-to-right lane only; a tap's row does not affect the result.
+    hitColumn(Number(cell.dataset.column));
   });
 
   startButton.addEventListener('click', startGame);
