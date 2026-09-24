@@ -18,8 +18,8 @@
   const COLUMNS = 4;
   const ROWS = 7;
   const GAME_DURATION = 60_000;
-  const CLEAR_DELAY = 30;
-  const DROP_DURATION = 90;
+  const CLEAR_DELAY = 0;
+  const DROP_DURATION = 50;
   let rowColumns = [];
   let score = 0;
   let running = false;
@@ -254,7 +254,11 @@
   board.addEventListener('click', (event) => {
     const cell = event.target.closest('.board-cell');
     if (!cell || cell.disabled) return;
-    hitColumn(Number(cell.dataset.column));
+    const bounds = board.getBoundingClientRect();
+    const column = Math.min(COLUMNS - 1, Math.max(0,
+      Math.floor(((event.clientX - bounds.left) / bounds.width) * COLUMNS)));
+    // The vertical position is intentionally ignored: the whole column is one hit lane.
+    hitColumn(column);
   });
 
   startButton.addEventListener('click', startGame);
