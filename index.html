@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#171329" />
+    <meta name="description" content="中秋夜守住月宮，點擊殭屍累積分數！" />
+    <title>月兔防衛隊｜中秋夜遊戲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="月兔防衛隊首頁"><span class="brand-mark">月</span><span>MOON<span class="brand-light">GUARD</span></span></a>
+        <span class="season-tag"><span class="season-dot"></span> 中秋特別任務</span>
+      </header>
+
+      <section class="intro" id="top">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> MID-AUTUMN · 60 SEC CHALLENGE</p>
+          <h1>月兔<span>防衛隊</span></h1>
+          <p class="intro-text">殭屍大軍來襲！守住月宮，點擊殭屍把牠們趕回去。<br class="desktop-only" />眼明手快，看看你能拿下幾分！</p>
+          <div class="hero-meta"><span class="meta-icon">⏱</span> 60 秒限時挑戰 <span class="meta-separator">·</span> <span class="meta-icon">✦</span> 擊中一隻 +1 分</div>
+        </div>
+        <div class="moon-art" aria-hidden="true">
+          <span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span>
+          <div class="moon-glow"><div class="moon-disc"><span class="moon-crater crater-one"></span><span class="moon-crater crater-two"></span><span class="moon-crater crater-three"></span><div class="moon-bunny"><i></i><i></i><b></b><em></em></div></div></div>
+          <div class="cloud cloud-one"></div><div class="cloud cloud-two"></div>
+          <span class="art-caption">守護月圓之夜</span>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-label="遊戲與排行榜">
+        <section class="game-card card">
+          <div class="card-heading">
+            <div><p class="section-kicker">YOUR MISSION</p><h2 id="game-heading">準備好出發了嗎？</h2></div>
+            <div class="live-status" id="status-pill"><span></span><b id="status-text">待命中</b></div>
+          </div>
+          <div class="game-stats" aria-live="polite">
+            <div class="stat"><span class="stat-label">剩餘時間</span><strong id="timer">01:00</strong></div>
+            <div class="stat stat-score"><span class="stat-label">本局分數</span><strong id="score">00</strong></div>
+            <div class="stat stat-best"><span class="stat-label">最高紀錄</span><strong id="best-score">00</strong></div>
+          </div>
+          <div class="arena-wrap">
+            <div class="arena-topline"><span><i class="arena-signal"></i> 月宮防線</span><span class="arena-hint" id="arena-hint">準備開始</span></div>
+            <div class="arena" id="arena" aria-label="4 欄 7 列遊戲區"></div>
+            <div class="arena-bottomline"><span>SECTOR 01 — LUNAR GATE</span><span id="hit-message">點擊殭屍得分</span></div>
+          </div>
+          <div class="game-controls">
+            <div class="player-field"><label for="player-name">隊員代號</label><input id="player-name" maxlength="12" autocomplete="nickname" placeholder="輸入你的名字" /></div>
+            <button class="primary-button" id="start-button" type="button"><span>開始任務</span><span class="button-arrow">↗</span></button>
+          </div>
+          <div class="upload-row">
+            <div class="upload-preview" id="upload-preview" aria-hidden="true"><span>?</span></div>
+            <div class="upload-copy"><strong>自訂殭屍圖片</strong><span id="upload-label">上傳圖片，換掉預設怪物</span></div>
+            <label class="upload-button" for="zombie-image">選擇圖片 <span>＋</span></label>
+            <input id="zombie-image" type="file" accept="image/*" hidden />
+          </div>
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </section>
+
+        <aside class="leaderboard-card card">
+          <div class="leader-heading"><div><p class="section-kicker">HALL OF FAME</p><h2>本機排行榜<span class="trophy">✦</span></h2></div><span class="local-badge">LOCAL</span></div>
+          <p class="leader-subtitle">這台裝置上的月宮守衛</p>
+          <div class="leader-list" id="leader-list"></div>
+          <div class="empty-board" id="empty-board"><span class="empty-medal">✧</span><strong>榜上還沒有人</strong><span>來拿下第一個高分吧！</span></div>
+          <div class="leader-footer"><span class="footer-lock">◈</span><span>分數只保存在這個瀏覽器</span></div>
+        </aside>
+      </section>
+
+      <footer class="page-footer"><span>月光所至，皆為守護</span><span>MADE FOR A MID-AUTUMN NIGHT <b>✦</b></span></footer>
+    </main>
+    <div class="result-modal" id="result-modal" hidden>
+      <div class="result-backdrop" data-close="true"></div>
+      <section class="result-panel" role="dialog" aria-modal="true" aria-labelledby="result-title">
+        <div class="result-sparkle">✦</div><p class="section-kicker">MISSION COMPLETE</p><h2 id="result-title">任務完成！</h2>
+        <p class="result-caption" id="result-caption">月宮暫時安全了</p><div class="result-score"><strong id="final-score">0</strong><span>分</span></div>
+        <p class="result-rank" id="result-rank"></p><button class="primary-button result-button" id="again-button" type="button">再玩一次 <span class="button-arrow">↗</span></button>
+      </section>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>
