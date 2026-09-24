@@ -18,8 +18,8 @@
   const COLUMNS = 4;
   const ROWS = 7;
   const GAME_DURATION = 60_000;
-  const CLEAR_DELAY = 70;
-  const DROP_DURATION = 140;
+  const CLEAR_DELAY = 30;
+  const DROP_DURATION = 90;
   let rowColumns = [];
   let score = 0;
   let running = false;
@@ -191,7 +191,7 @@
     startButton.disabled = true;
     startButton.innerHTML = '遊戲進行中 <b>●</b>';
     rankButton.disabled = true;
-    hint.textContent = '每排一隻殭屍；點錯空格會有 1 秒冷卻';
+    hint.textContent = '點任一欄都會打中該欄最下方的殭屍';
     footerMessage.textContent = '每點中一隻殭屍得 1 分';
     frameId = requestAnimationFrame(updateTimer);
   }
@@ -206,7 +206,7 @@
       penaltyActive = false;
       if (running) {
         footerMessage.textContent = '每點中一隻殭屍得 1 分';
-        hint.textContent = '點中殭屍消除，上方殭屍快速落下';
+        hint.textContent = '點任一欄都會打中該欄最下方的殭屍';
       }
       setBoardDisabled();
       const bottomZombie = board.querySelector(`.board-cell[data-row="${ROWS - 1}"] .zombie-image`);
@@ -214,12 +214,16 @@
     }, 1000);
   }
 
-  function hitZombie(row, column, cell) {
+  function hitColumn(column) {
     if (!running || settling || penaltyActive) return;
-    if (rowColumns[row] !== column) {
+    // A tap anywhere in a lane hits the lowest zombie in that column.
+    const row = rowColumns.lastIndexOf(column);
+    if (row < 0) {
       wrongTap();
       return;
     }
+    const cell = board.querySelector(`.board-cell[data-row="${row}"][data-column="${column}"]`);
+    if (!cell) return;
 
     score += 1;
     scoreDisplay.textContent = String(score);
@@ -250,7 +254,7 @@
   board.addEventListener('click', (event) => {
     const cell = event.target.closest('.board-cell');
     if (!cell || cell.disabled) return;
-    hitZombie(Number(cell.dataset.row), Number(cell.dataset.column), cell);
+    hitColumn(Number(cell.dataset.column));
   });
 
   startButton.addEventListener('click', startGame);
