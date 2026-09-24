@@ -1,6 +1,6 @@
 # 月兔防衛隊
 
-中秋夜限時守衛遊戲：60 秒內點擊落下的殭屍，每擊中一隻得 1 分。
+中秋夜限時消除遊戲：60 秒內點掉殭屍圖片，每張得 1 分；被點掉圖片上方的圖片會快速落下補位。
 
 ## Demo
 
@@ -18,11 +18,11 @@ python3 -m http.server 8000
 
 接著在瀏覽器開啟 <http://localhost:8000>。
 
-## 遊戲資料
+## 遊戲資料與圖片
 
 - 排行榜與玩家名稱以 `localStorage` 保存在目前瀏覽器。
-- 自訂殭屍圖片以 IndexedDB 保存在目前瀏覽器，圖片上限 5 MB。
-- 這些資料不會同步到其他裝置或玩家。純 GitHub Pages 沒有安全的伺服器端憑證可用來寫回 Git 儲存庫。
+- 殭屍圖片由專案統一提供，位置是 `assets/zombie.svg`。要替換成自己的圖片，可在 GitHub 編輯／上傳這個素材檔；若更換檔名，請同步修改 `game.js` 的 `ZOMBIE_IMAGE`。
+- 排行榜不會同步到其他裝置或玩家。純 GitHub Pages 沒有安全的伺服器端憑證可用來寫回 Git 儲存庫。
 
 ## 部署到 GitHub Pages
 
@@ -36,5 +36,6 @@ python3 -m http.server 8000
 
 - `SPEC.md`：產品需求與驗收條件。
 - `index.html`、`styles.css`、`game.js`：遊戲介面、樣式與玩法。
+- `assets/zombie.svg`：全遊戲共用的殭屍圖片，可在 GitHub 統一更換。
 - `.github/workflows/pages.yml`：GitHub Pages 部署工作流程。
 - `RETROSPECTIVE.md`：AI 協作回顧。
