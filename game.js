@@ -18,47 +18,63 @@
   const COLUMNS = 4;
   const ROWS = 7;
   const GAME_DURATION = 60_000;
-  const CLEAR_DELAY = 85;
-  let pieces = [];
+  const CLEAR_DELAY = 70;
+  const DROP_DURATION = 140;
+  let rowColumns = [];
   let score = 0;
   let running = false;
   let settling = false;
+  let penaltyActive = false;
   let endTime = 0;
   let frameId = 0;
-  let nextPieceId = 0;
 
-  function newPiece(row, column, effect = '') {
-    return { id: ++nextPieceId, row, column, effect };
+  function randomColumn() {
+    return Math.floor(Math.random() * COLUMNS);
   }
 
   function fillBoard() {
-    pieces = [];
-    for (let row = 0; row < ROWS; row += 1) {
-      for (let column = 0; column < COLUMNS; column += 1) {
-        pieces.push(newPiece(row, column));
-      }
-    }
+    // Exactly one zombie is assigned to each horizontal row.
+    rowColumns = Array.from({ length: ROWS }, randomColumn);
     renderBoard();
   }
 
-  function renderBoard() {
+  function setBoardDisabled() {
+    for (const cell of board.querySelectorAll('.board-cell')) {
+      cell.disabled = !running || settling || penaltyActive;
+    }
+  }
+
+  function renderBoard({ fallingRows = new Set(), freshTop = false } = {}) {
     const fragment = document.createDocumentFragment();
-    const ordered = [...pieces].sort((a, b) => a.row - b.row || a.column - b.column);
-    for (const piece of ordered) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `piece${piece.effect ? ` ${piece.effect}` : ''}`;
-      button.dataset.pieceId = String(piece.id);
-      button.style.gridRow = String(piece.row + 1);
-      button.style.gridColumn = String(piece.column + 1);
-      button.disabled = !running || settling;
-      button.setAttribute('aria-label', '月宮殭屍，點擊消除得 1 分');
-      const image = document.createElement('img');
-      image.src = ZOMBIE_IMAGE;
-      image.alt = '';
-      image.draggable = false;
-      button.append(image);
-      fragment.append(button);
+    for (let row = 0; row < ROWS; row += 1) {
+      for (let column = 0; column < COLUMNS; column += 1) {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'board-cell';
+        cell.dataset.row = String(row);
+        cell.dataset.column = String(column);
+        cell.style.gridRow = String(row + 1);
+        cell.style.gridColumn = String(column + 1);
+        const hasZombie = rowColumns[row] === column;
+        cell.disabled = !running || settling || penaltyActive;
+        cell.setAttribute('aria-label', hasZombie
+          ? `第 ${row + 1} 排的殭屍`
+          : `第 ${row + 1} 排第 ${column + 1} 格，空格`);
+
+        if (hasZombie) {
+          cell.classList.add('has-zombie');
+          const image = document.createElement('img');
+          image.className = 'zombie-image';
+          if (fallingRows.has(row)) image.classList.add('is-falling');
+          if (freshTop && row === 0) image.classList.add('is-new');
+          if (penaltyActive && row === ROWS - 1) image.classList.add('is-warning');
+          image.src = ZOMBIE_IMAGE;
+          image.alt = '';
+          image.draggable = false;
+          cell.append(image);
+        }
+        fragment.append(cell);
+      }
     }
     board.replaceChildren(fragment);
   }
@@ -112,43 +128,6 @@
     element.hidden = true;
   }
 
-  function hitPiece(pieceId, button) {
-    if (!running || settling) return;
-    const hit = pieces.find((piece) => piece.id === pieceId);
-    if (!hit) return;
-
-    settling = true;
-    score += 1;
-    scoreDisplay.textContent = String(score);
-    button.classList.add('is-clearing');
-    for (const pieceButton of board.querySelectorAll('.piece')) pieceButton.disabled = true;
-
-    window.setTimeout(() => {
-      const fallingIds = new Set();
-      pieces = pieces.filter((piece) => piece.id !== hit.id);
-      for (const piece of pieces) {
-        if (piece.column === hit.column && piece.row < hit.row) {
-          piece.row += 1;
-          piece.effect = 'is-falling';
-          fallingIds.add(piece.id);
-        } else {
-          piece.effect = '';
-        }
-      }
-
-      // Refill the top cell so the 4 × 7 board stays full after every hit.
-      pieces.push(newPiece(0, hit.column, 'is-new'));
-      settling = false;
-      renderBoard();
-      window.setTimeout(() => {
-        pieces.forEach((piece) => { piece.effect = ''; });
-        for (const pieceButton of board.querySelectorAll('.is-falling, .is-new')) {
-          pieceButton.classList.remove('is-falling', 'is-new');
-        }
-      }, 150);
-    }, CLEAR_DELAY);
-  }
-
   function finishGame() {
     if (!running) return;
     running = false;
@@ -179,8 +158,8 @@
     const rank = saved ? finalScores.findIndex((row) => row === entry) + 1 : 0;
     document.querySelector('#final-score').textContent = String(score);
     document.querySelector('#result-caption').textContent = score
-      ? `做得好，${name}！圖片掉落得又快又準。`
-      : '再試一次，點掉圖片就能得分。';
+      ? `做得好，${name}！每排只出現一隻殭屍。`
+      : '再試一次，點中殭屍就能得分。';
     document.querySelector('#result-rank').textContent = rank > 0
       ? `本機排行榜第 ${rank} 名`
       : score > 0 ? '這次沒有進入本機前 10 名。' : '';
@@ -206,20 +185,72 @@
     timerDisplay.textContent = '60';
     running = true;
     settling = false;
-    fillBoard();
+    penaltyActive = false;
     endTime = Date.now() + GAME_DURATION;
+    fillBoard();
     startButton.disabled = true;
     startButton.innerHTML = '遊戲進行中 <b>●</b>';
     rankButton.disabled = true;
-    hint.textContent = '點掉圖片，上方圖片會快速落下';
-    footerMessage.textContent = '每點掉一張圖片得 1 分';
+    hint.textContent = '每排一隻殭屍；點錯空格會有 1 秒冷卻';
+    footerMessage.textContent = '每點中一隻殭屍得 1 分';
     frameId = requestAnimationFrame(updateTimer);
   }
 
+  function wrongTap() {
+    if (!running || settling || penaltyActive) return;
+    penaltyActive = true;
+    footerMessage.textContent = '點錯了！1 秒內不能操作';
+    hint.textContent = '冷卻中：最底排殭屍閃爍';
+    renderBoard();
+    window.setTimeout(() => {
+      penaltyActive = false;
+      if (running) {
+        footerMessage.textContent = '每點中一隻殭屍得 1 分';
+        hint.textContent = '點中殭屍消除，上方殭屍快速落下';
+      }
+      setBoardDisabled();
+      const bottomZombie = board.querySelector(`.board-cell[data-row="${ROWS - 1}"] .zombie-image`);
+      bottomZombie?.classList.remove('is-warning');
+    }, 1000);
+  }
+
+  function hitZombie(row, column, cell) {
+    if (!running || settling || penaltyActive) return;
+    if (rowColumns[row] !== column) {
+      wrongTap();
+      return;
+    }
+
+    score += 1;
+    scoreDisplay.textContent = String(score);
+    settling = true;
+    cell.classList.add('is-hit');
+    setBoardDisabled();
+
+    window.setTimeout(() => {
+      const previousRows = [...rowColumns];
+      for (let dropRow = row; dropRow > 0; dropRow -= 1) {
+        rowColumns[dropRow] = previousRows[dropRow - 1];
+      }
+      // A fresh zombie chooses one of the four top positions after every hit.
+      rowColumns[0] = randomColumn();
+      const fallingRows = new Set(Array.from({ length: row }, (_, index) => index + 1));
+      renderBoard({ fallingRows, freshTop: true });
+
+      window.setTimeout(() => {
+        settling = false;
+        setBoardDisabled();
+        for (const image of board.querySelectorAll('.is-falling, .is-new')) {
+          image.classList.remove('is-falling', 'is-new');
+        }
+      }, DROP_DURATION);
+    }, CLEAR_DELAY);
+  }
+
   board.addEventListener('click', (event) => {
-    const button = event.target.closest('.piece');
-    if (!button || button.disabled) return;
-    hitPiece(Number(button.dataset.pieceId), button);
+    const cell = event.target.closest('.board-cell');
+    if (!cell || cell.disabled) return;
+    hitZombie(Number(cell.dataset.row), Number(cell.dataset.column), cell);
   });
 
   startButton.addEventListener('click', startGame);
