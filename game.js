@@ -191,7 +191,7 @@
     startButton.disabled = true;
     startButton.innerHTML = '遊戲進行中 <b>●</b>';
     rankButton.disabled = true;
-    hint.textContent = '點任一欄都會打中該欄最下方的殭屍';
+    hint.textContent = '上下位置不影響判定，只檢查該欄最底格';
     footerMessage.textContent = '每點中一隻殭屍得 1 分';
     frameId = requestAnimationFrame(updateTimer);
   }
@@ -206,7 +206,7 @@
       penaltyActive = false;
       if (running) {
         footerMessage.textContent = '每點中一隻殭屍得 1 分';
-        hint.textContent = '點任一欄都會打中該欄最下方的殭屍';
+        hint.textContent = '上下位置不影響判定，只檢查該欄最底格';
       }
       setBoardDisabled();
       const bottomZombie = board.querySelector(`.board-cell[data-row="${ROWS - 1}"] .zombie-image`);
@@ -216,9 +216,9 @@
 
   function hitColumn(column) {
     if (!running || settling || penaltyActive) return;
-    // A tap anywhere in a lane hits the lowest zombie in that column.
-    const row = rowColumns.lastIndexOf(column);
-    if (row < 0) {
+    // Ignore the tap's vertical coordinate; judge only the bottom cell in this column.
+    const row = ROWS - 1;
+    if (rowColumns[row] !== column) {
       wrongTap();
       return;
     }
